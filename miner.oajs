@@ -5,7 +5,7 @@ var meditasyonYap = false;
 var beklenecekMana = 30;
 var bozukMarklariRaporla = false;
 
-// buradan aşşağısına dokunma..
+// buradan aşağısına dokunma..
 
 function Check() {
     var currentSpot = chivalryKullan ? 7 : 5;
@@ -77,7 +77,7 @@ function Kaz(book, i) {
         if (Orion.InJournal("There is no metal here to mine"))
             break;
         if (Orion.InJournal("You can't mine|Target cannot be seen")) {
-            if (bozukMarklariRaporla) {
+            if (bozukMarklariRaporla == true) {
                 if (!TextWindow.IsOpened())
                     TextWindow.Open();
                 TextWindow.Print(Player.Name() + " karakterindeki " + book + ". kitapdaki " + i + ". mark bozuk!!");
@@ -85,11 +85,11 @@ function Kaz(book, i) {
             break;
         }
     }
-    if (manaBekle) {
-        var inMeditaion = false;
+    if (manaBekle == true) {
+        var inMeditation = false;
         while (Player.Mana() < beklenecekMana) {
-            if (meditasyonYap && !inMeditaion) {
-                inMeditaion = true;
+            if (meditasyonYap == true && inMeditation == false) {
+                inMeditation = true;
                 Orion.UseSkill("meditation");
             }
         }
