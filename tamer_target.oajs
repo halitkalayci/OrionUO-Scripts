@@ -1,0 +1,18 @@
+function findAndAttack() {
+    var mobs = Orion.FindList("enemymobiles", ground, "near", 18, "gray|criminal|red|orange");
+    if (mobs.length) {
+        var mob = mobs[0];
+        Orion.ShowStatusbar(mob, 1000, 550);
+        Orion.Say('All Attack');
+        Orion.Wait(150);
+        Orion.TargetObject(mob);
+        var mobObj = Orion.FindObject(mob)
+        while (mobObj.Hits() > 1) {
+            Orion.CharPrint(self, 57, "Hedef: " + mobObj.Name() + " Canı: %" + mobObj.Hits() * 4);
+            Orion.Wait(2500);
+        }
+        Orion.CloseStatusbar(mob);
+    } else {
+        Orion.Print(57, 'Listeden hedef bulunamadı..');
+    }
+}
