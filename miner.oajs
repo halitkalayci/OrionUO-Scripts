@@ -1,0 +1,99 @@
+var runeBookSayisi = 2;
+var chivalryKullan = true;
+var manaBekle = true;
+var meditasyonYap = false;
+var beklenecekMana = 30;
+var bozukMarklariRaporla = false;
+
+// buradan aşşağısına dokunma..
+
+function Check() {
+    var currentSpot = chivalryKullan ? 7 : 5;
+    Shared.AddVar("currentSpot", currentSpot);
+    for (var i = 0; i < 10; i++) {
+        Orion.RemoveObject('mineBook' + i);
+    }
+    while (true) {
+        if (!Orion.ScriptRunning('GoToNextSpot')) {
+            Orion.ToggleScript('GoToNextSpot');
+        }
+    }
+}
+
+
+function GoToNextSpot() {
+    for (var i = 1; i <= runeBookSayisi; i++) {
+        if (!Orion.ObjectExists('mineBook' + i)) {
+            Orion.CharPrint(self, 57, i + '.Mining Kitabını Seçin');
+            Orion.WaitForAddObject('mineBook' + i);
+        }
+    }
+    Orion.SaveConfig();
+    var currentSpot = Shared.GetVar('CurrentSpot', -1);
+    var currentBook = Shared.GetVar('CurrentBook', 1)
+    if (Player.Weight() + 90 >= Player.MaxWeight()) {
+        GoToHomeOrBank();
+    } else {
+        currentSpot += 6;
+        var maxSpot = chivalryKullan ? 97 : 95;
+        if (currentSpot >= maxSpot) {
+            currentBook++;
+            currentSpot = chivalryKullan ? 7 : 5;
+        }
+        if (currentBook > runeBookSayisi) {
+            currentBook = 1;
+        }
+        Shared.AddVar('currentBook', currentBook);
+        Shared.AddVar('CurrentSpot', currentSpot);
+        GoToRunebookSpot(currentSpot);
+    }
+}
+
+function GoToRunebookSpot(i) {
+    // 2 , 5 , 8 , 11 ,14 , 17, 20,23,26
+    var currentBook = Shared.GetVar("currentBook", 1);
+    Orion.CancelWaitGump();
+    Orion.WaitGump(Orion.CreateGumpHook(i));
+    Orion.UseObject('mineBook' + currentBook);
+    var markNumber = chivalryKullan ? i == 7 ? 1 : (Math.floor(i / 7) + 1) : i == 5 ? 1 : (Math.floor(i / 6) + 1);
+    Orion.CharPrint(self, 1161, currentBook + '. kitaptan ' + markNumber + '. marka gidiliyor.');
+    Orion.Wait(800);
+    Kaz(currentBook, markNumber);
+}
+
+function Kaz(book, i) {
+    while ((Player.Weight() + 90) < Player.MaxWeight()) {
+        var hideDene = 0;
+        while (!Player.Hidden() && hideDene < 5) {
+            Orion.UseSkill("Hiding");
+            hideDene++;
+        }
+        Orion.Wait(600);
+        Orion.ClearJournal();
+        Orion.UseType('0x0F39', 'any');
+        Orion.Wait(400);
+        Orion.TargetTileRelative('any', 0, 0, 0);
+        Orion.Wait(400);
+        if (Orion.InJournal("There is no metal here to mine"))
+            break;
+        if (Orion.InJournal("You can't mine|Target cannot be seen")) {
+            if (bozukMarklariRaporla) {
+                if (!TextWindow.IsOpened())
+                    TextWindow.Open();
+                TextWindow.Print(Player.Name() + " karakterindeki " + book + ". kitapdaki " + i + ". mark bozuk!!");
+            }
+            break;
+        }
+    }
+    if (manaBekle) {
+        var inMeditaion = false;
+        while (Player.Mana() < beklenecekMana) {
+            if (meditasyonYap && !inMeditaion) {
+                inMeditaion = true;
+                Orion.UseSkill("meditation");
+            }
+        }
+    }
+    Orion.Wait(400);
+    GoToNextSpot();
+}
