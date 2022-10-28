@@ -1,0 +1,34 @@
+function startBandage() {
+    var animalsCount = 6;
+    getAndSetAnimals(animalsCount);
+    while (true) {
+        for (var i = 1; i <= animalsCount; i++) {
+            var animalToBandage = Orion.FindObject("pet" + i);
+            if (animalToBandage && animalToBandage.Hits() < animalToBandage.MaxHits()) {
+                Orion.Print(i + ". pet bandajlanıyor..");
+                Orion.Say("[band");
+                Orion.Wait(300);
+                Orion.TargetObject("pet" + i);
+                Orion.ClearJournal();
+                Orion.WaitJournal("You finish applying the bandages", 0, Orion.Now() + 2000);
+            }
+
+        }
+    }
+}
+
+function ClearPets() {
+    var petCount = 6;
+    for (var i = 1; i <= petCount; i++) {
+        Orion.RemoveObject("pet" + i);
+    }
+}
+
+function getAndSetAnimals(animalCount) {
+    for (var i = 1; i <= animalCount; i++) {
+        if (!Orion.ObjectExists("pet" + i)) {
+            Orion.CharPrint(self, 1161, i + ". Peti Seçiniz");
+            Orion.WaitForAddObject("pet" + i);
+        }
+    }
+}
